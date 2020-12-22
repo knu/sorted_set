@@ -1,6 +1,6 @@
 # SortedSet Changelog
 
-## 1.0.0 (unreleased)
+## 1.0.0 (2020-12-22)
 
 This is the first release of sorted_set as a gem.  Here lists the changes since the version bundled with Ruby 2.7.
 
