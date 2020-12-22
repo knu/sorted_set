@@ -23,7 +23,9 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  unless defined?(JRUBY_VERSION)
+  if defined?(JRUBY_VERSION)
+    spec.platform = "java"
+  else
     spec.add_runtime_dependency "set", "~> 1.0"
     spec.add_runtime_dependency "rbtree"
   end
