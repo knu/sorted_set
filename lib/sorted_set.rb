@@ -1,6 +1,9 @@
 # :markup: markdown
 
 require 'set'
+
+return if defined?(JRUBY_VERSION)
+
 require 'rbtree'
 
 Object.instance_exec do

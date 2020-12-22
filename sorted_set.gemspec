@@ -22,11 +22,9 @@ Gem::Specification.new do |spec|
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
-  spec.add_runtime_dependency "set", "~> 1.0"
-  if defined?(JRUBY_VERSION)
-    spec.platform = 'java'
-    spec.add_runtime_dependency "rbtree-jruby"
-  else
+
+  unless defined?(JRUBY_VERSION)
+    spec.add_runtime_dependency "set", "~> 1.0"
     spec.add_runtime_dependency "rbtree"
   end
 end

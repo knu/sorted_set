@@ -8,6 +8,9 @@ Every element in SortedSet must be *mutually comparable* to every
 other: comparison with `<=>` must not return nil for any pair of
 elements.  Otherwise ArgumentError will be raised.
 
+Currently this library does nothing for JRuby, as it has its own
+version of Set and SortedSet.
+
 ## Installation
 
 Add this line to your application's Gemfile:
