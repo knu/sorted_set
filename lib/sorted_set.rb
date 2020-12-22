@@ -3,6 +3,21 @@
 require 'set'
 require 'rbtree'
 
+Object.instance_exec do
+  # Undefine SortedSet for two reasons.
+  #
+  # 1. We should wipe out an existing implementation if Ruby 2.x loads
+  #    this library after loading the standard set library which
+  #    defines SortedSet.
+  #
+  # 2. Ruby >=3.0 (set >=1.0.0) sets autoload on SortedSet, and we
+  #    shouldn't let the following reference to SortedSet fire it
+  #    because it would end up requiring this library, leading to
+  #    circular require.
+  #
+  remove_const :SortedSet if const_defined?(:SortedSet)
+end
+
 ##
 # SortedSet implements a Set whose elements are sorted in ascending
 # order (according to the return values of their `<=>` methods) when
@@ -31,27 +46,9 @@ require 'rbtree'
 # ```
 
 class SortedSet < Set
-  # Remove the existing implementation in case Ruby 2.x loads this
-  # library after loading the standard set library which defines
-  # SortedSet.
-  if class_variable_defined?(:@@setup)
-    # a hack to shut up warning
-    alias_method :old_init, :initialize
-
-    instance_methods(false).each { |m| remove_method(m) }
-  end
-
   # Creates a SortedSet.  See Set.new for details.
   def initialize(*args)
     @hash = RBTree.new
     super
-  end
-
-  if class_variable_defined?(:@@setup)
-    remove_class_variable(:@@setup)
-    remove_class_variable(:@@mutex) if class_variable_defined?(:@@mutex)
-
-    # a hack to shut up warning
-    remove_method :old_init
   end
 end
