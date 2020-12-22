@@ -1,0 +1,27 @@
+name: test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        ruby: [ 2.7, head, jruby ]
+        os: [ ubuntu ]
+
+    name: >-
+      ${{matrix.os}}-ruby-${{matrix.ruby}}
+    runs-on: ${{matrix.os}}-latest
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@master
+
+      - name: Set up ruby and bundle
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{matrix.ruby}}
+          bundler-cache: true
+
+      - name: Run test
+        run: bundle exec rake test
