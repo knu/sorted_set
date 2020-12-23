@@ -27,6 +27,6 @@ Gem::Specification.new do |spec|
     spec.platform = "java"
   else
     spec.add_runtime_dependency "set", "~> 1.0"
-    spec.add_runtime_dependency "rbtree"
+    spec.add_runtime_dependency "rbtree3"
   end
 end
