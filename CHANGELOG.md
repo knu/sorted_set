@@ -1,5 +1,10 @@
 # SortedSet Changelog
 
+## 1.0.3 (2021-02-13)
+
+* Enhancements
+  * Switch back to the original [rbtree](https://rubygems.org/gems/rbtree) gem, which added support for Ruby >=3.0.
+
 ## 1.0.2 (2020-12-24)
 
 * Enhancements
