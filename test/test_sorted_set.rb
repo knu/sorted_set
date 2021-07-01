@@ -2,6 +2,8 @@ require 'test/unit'
 require 'sorted_set'
 
 class TC_SortedSet < Test::Unit::TestCase
+  FrozenError = RuntimeError unless defined?(FrozenError)
+
   def test_sortedset
     s = SortedSet[4,5,3,1,2]
 
