@@ -46,6 +46,10 @@ class TC_SortedSet < Test::Unit::TestCase
     assert_same(nil, ret)
     assert_equal(['four', 'one', 'three', 'two'], s.to_a)
     assert_equal(['four', 'one', 'three', 'two'], a)
+
+    s = SortedSet.new([1,2,3])
+    assert_equal(true, s.include?(1))
+    assert_equal(false, s.include?(5))
   end
 
   def test_each
