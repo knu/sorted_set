@@ -51,7 +51,7 @@ end
 class SortedSet < Set
   # Creates a SortedSet.  See Set.new for details.
   def initialize(*args)
-    @hash = RBTree.new
+    @hash = RBTree.new(false)
     super
   end
 end
