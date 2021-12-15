@@ -121,4 +121,10 @@ class TC_SortedSet < Test::Unit::TestCase
     assert_instance_of(SortedSet, set)
     assert_equal([-10,-8,-6,-4,-2], set.to_a)
   end
+
+  def test_include
+    s = SortedSet[4,5,3,1,2]
+    assert_equal(true, s.include?(4))
+    assert_equal(false, s.include?(6))
+  end
 end
