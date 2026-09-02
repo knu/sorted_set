@@ -5,8 +5,13 @@
 
 class SortedSet
   def initialize(enum = nil, &block)
-    @tree = RBTree.new
-    super
+    if block.nil? && enum.instance_of?(self.class)
+      @tree = enum.instance_variable_get(:@tree).dup
+      super(nil)
+    else
+      @tree = RBTree.new
+      super
+    end
   end
 
   def add(o)
@@ -61,6 +66,23 @@ class SortedSet
 
   def hash
     @tree.keys.hash
+  end
+
+  def ==(other)
+    return true if equal?(other)
+
+    if other.is_a?(SortedSet)
+      @tree == other.instance_variable_get(:@tree)
+    elsif other.is_a?(Set)
+      size == other.size && other.all? { |o| include?(o) }
+    else
+      false
+    end
+  end
+
+  def eql?(other)
+    other.instance_of?(self.class) &&
+      @tree.keys.eql?(other.instance_variable_get(:@tree).keys)
   end
 
   def freeze

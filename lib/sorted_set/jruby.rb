@@ -7,8 +7,13 @@ require 'java'
 
 class SortedSet
   def initialize(enum = nil, &block)
-    @tree = java.util.TreeSet.new
-    super
+    if block.nil? && enum.instance_of?(self.class)
+      @tree = enum.instance_variable_get(:@tree).dup
+      super(nil)
+    else
+      @tree = java.util.TreeSet.new
+      super
+    end
   end
 
   def add(o)
@@ -26,6 +31,10 @@ class SortedSet
 
   def include?(o)
     @tree.contains(o)
+  rescue Java::JavaLang::ClassCastException
+    # TreeSet rejects some Ruby-comparable cross-class values, such as
+    # Integer and Float.
+    @tree.to_a.any? { |element| (element <=> o) == 0 }
   end
   alias member? include?
 
@@ -67,6 +76,21 @@ class SortedSet
 
   def hash
     @tree.to_a.hash
+  end
+
+  def ==(other)
+    return true if equal?(other)
+
+    if other.is_a?(Set)
+      size == other.size && other.all? { |o| include?(o) }
+    else
+      false
+    end
+  end
+
+  def eql?(other)
+    other.instance_of?(self.class) &&
+      @tree.to_a.eql?(other.instance_variable_get(:@tree).to_a)
   end
 
   def freeze

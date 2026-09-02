@@ -121,4 +121,98 @@ class TC_SortedSet < Test::Unit::TestCase
     assert_instance_of(SortedSet, set)
     assert_equal([-10,-8,-6,-4,-2], set.to_a)
   end
+
+  def test_new_from_sorted_set
+    set1 = SortedSet[3,1,2]
+    set2 = SortedSet.new(set1)
+    assert_equal([1,2,3], set2.to_a)
+    assert_nothing_raised { set2.add 4 }
+    assert_equal([1,2,3,4], set2.to_a)
+    assert_equal([1,2,3], set1.to_a)
+
+    set2 = SortedSet.new(set1) { |o| o * 2 }
+    assert_equal([2,4,6], set2.to_a)
+
+    set1.freeze
+    set3 = SortedSet.new(set1)
+    assert_equal([1,2,3], set3.to_a)
+    assert_not_predicate set3, :frozen?
+    assert_nothing_raised { set3.add 4 }
+  end
+
+  def test_equality
+    omit('Ruby 4.0 specific') unless SortedSet.instance_method(:==).owner == SortedSet
+
+    set1 = SortedSet[1,2,3]
+    set2 = SortedSet[3,2,1]
+    set3 = SortedSet[1,2]
+    subclass = Class.new(SortedSet)
+    set4 = subclass.new([3,2,1])
+
+    assert_operator(set1, :==, set2)
+    assert_not_operator(set1, :==, set3)
+    assert_operator(set1, :eql?, set2)
+    assert_not_operator(set1, :eql?, set3)
+    assert_operator(set1, :==, set4)
+    assert_operator(set4, :==, set1)
+    assert_not_operator(set1, :eql?, set4)
+    assert_not_operator(set4, :eql?, set1)
+
+    assert_equal(set1.hash, set2.hash)
+
+    assert_equal(:first, { set1 => :first, set3 => :second }[set2])
+    assert_equal(:first, { first: set1, second: set3 }.key(set2))
+
+    integer_set = SortedSet[1]
+    float_set = SortedSet[1.0]
+    assert_operator(integer_set, :==, float_set)
+    assert_not_operator(integer_set, :eql?, float_set)
+    assert_nil({ integer_set => :match }[float_set])
+
+    element_class = Class.new do
+      include Comparable
+
+      attr_reader :value
+
+      def initialize(value)
+        @value = value
+      end
+
+      def <=>(other)
+        value <=> other.value
+      end
+    end
+
+    assert_operator(SortedSet[element_class.new(1)], :==, SortedSet[element_class.new(1)])
+  end
+
+  def test_equality_with_set
+    omit('Ruby 4.0 specific') unless SortedSet.instance_method(:==).owner == SortedSet
+
+    sorted_set = SortedSet[1,2,3]
+
+    assert_operator(SortedSet[], :==, Set[])
+    assert_operator(sorted_set, :==, Set[3,2,1])
+    assert_not_operator(sorted_set, :==, Set[1,2])
+    assert_not_operator(sorted_set, :==, Set[1,2,4])
+    assert_operator(SortedSet[1], :==, Set[1.0])
+    assert_include(SortedSet[1], 1.0)
+    assert_not_operator(sorted_set, :==, [1,2,3])
+    assert_not_operator(sorted_set, :eql?, Set[1,2,3])
+  end
+
+  def test_set_equality_with_sorted_set
+    omit('Ruby 4.0 specific') unless SortedSet.instance_method(:==).owner == SortedSet
+
+    sorted_set = SortedSet[1,2,3]
+
+    assert_operator(Set[], :==, SortedSet[])
+    assert_operator(Set[3,2,1], :==, sorted_set)
+    assert_not_operator(Set[1,2], :==, sorted_set)
+    assert_not_operator(Set[1,2,4], :==, sorted_set)
+    assert_not_operator(Set[1.0], :==, SortedSet[1])
+    assert_not_operator(Set[], :eql?, SortedSet[])
+    assert_not_operator(Set[1,2,3], :eql?, sorted_set)
+    assert_nil({ Set[] => :match }[SortedSet[]])
+  end
 end

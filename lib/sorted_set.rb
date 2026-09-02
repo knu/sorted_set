@@ -61,3 +61,26 @@ elsif defined?(Set::CoreSet)
 else
   require_relative 'sorted_set/ruby3'
 end
+
+if defined?(JRUBY_VERSION) || defined?(Set::CoreSet)
+  class Set
+    # Set's equality cannot see SortedSet's separate backing store.
+    module SortedSetEquality
+      def ==(other)
+        return super unless other.is_a?(SortedSet)
+
+        size == other.size && other.all? { |o| include?(o) }
+      end
+
+      def eql?(other)
+        return false if other.is_a?(SortedSet)
+
+        super
+      end
+    end
+
+    prepend SortedSetEquality
+
+    private_constant :SortedSetEquality
+  end
+end
